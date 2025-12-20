@@ -1,0 +1,344 @@
+<!-- templates/api/admin_dashboard.html -->
+{% extends 'api/base.html' %}
+
+{% block title %}Дашборд - ProbationServices{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-tachometer-alt"></i> Панель управления</h1>
+        <div class="btn-group">
+            <a href="/admin/" class="btn btn-outline-warning">
+                <i class="fas fa-cog"></i> Админка Django
+            </a>
+            <a href="{% url 'export_tickets_csv' %}" class="btn btn-outline-success">
+                <i class="fas fa-file-export"></i> Экспорт CSV
+            </a>
+            <a href="{% url 'profile' %}" class="btn btn-outline-primary">
+                <i class="fas fa-user"></i> Мой профиль
+            </a>
+        </div>
+    </div>
+
+    <!-- Основная статистика -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Всего пользователей
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ users_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Всего заявок
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_tickets }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-ticket-alt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Инструкций
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_instructions }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-book fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Просмотров инструкций
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_views }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-eye fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Статистика заявок -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Статистика заявок</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-3">
+                            <div class="card border-danger">
+                                <div class="card-body">
+                                    <h2 class="text-danger">{{ open_tickets }}</h2>
+                                    <p class="mb-0">Новых</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center mb-3">
+                            <div class="card border-warning">
+                                <div class="card-body">
+                                    <h2 class="text-warning">{{ in_progress_tickets }}</h2>
+                                    <p class="mb-0">В работе</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center mb-3">
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <h2 class="text-success">{{ resolved_tickets }}</h2>
+                                    <p class="mb-0">Решено</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Статистика пользователей -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-success">Статистика пользователей</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-3">
+                            <div class="card border-primary">
+                                <div class="card-body">
+                                    <h2 class="text-primary">{{ clients_count }}</h2>
+                                    <p class="mb-0">Клиентов</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center mb-3">
+                            <div class="card border-warning">
+                                <div class="card-body">
+                                    <h2 class="text-warning">{{ specialists_count }}</h2>
+                                    <p class="mb-0">Специалистов</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center mb-3">
+                            <div class="card border-danger">
+                                <div class="card-body">
+                                    <h2 class="text-danger">{{ admins_count }}</h2>
+                                    <p class="mb-0">Админов</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Последние активности -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">Последние заявки</h6>
+                </div>
+                <div class="card-body">
+                    {% if recent_tickets %}
+                    <div class="list-group">
+                        {% for ticket in recent_tickets %}
+                        <a href="{% url 'ticket_detail' ticket.id %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">#{{ ticket.id }}: {{ ticket.title }}</h6>
+                                <small>
+                                    {% if ticket.status == 'open' %}
+                                        <span class="badge bg-danger">Новая</span>
+                                    {% elif ticket.status == 'in_progress' %}
+                                        <span class="badge bg-warning">В работе</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Решена</span>
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <p class="mb-1">{{ ticket.description|truncatewords:10 }}</p>
+                            <small class="text-muted">
+                                {{ ticket.created_by.username }} • {{ ticket.created_at|date:"d.m.Y H:i" }}
+                            </small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">Нет заявок</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">Популярные инструкции</h6>
+                </div>
+                <div class="card-body">
+                    {% if popular_instructions %}
+                    <div class="list-group">
+                        {% for instruction in popular_instructions %}
+                        <a href="{% url 'instruction_detail' instruction.id %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ instruction.title }}</h6>
+                                <small class="text-muted">
+                                    <i class="fas fa-eye"></i> {{ instruction.view_count }}
+                                </small>
+                            </div>
+                            <p class="mb-1">{{ instruction.content|truncatewords:8 }}</p>
+                            <small class="text-muted">
+                                {{ instruction.get_category_display }} • {{ instruction.created_at|date:"d.m.Y" }}
+                            </small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">Нет инструкций</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Дополнительные действия -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-dark">Дополнительные действия</h6>
+                </div>
+                <div class="card-body">
+                    <div class="btn-group" role="group">
+                        <a href="{% url 'api_docs' %}" class="btn btn-outline-info">
+                            <i class="fas fa-code"></i> API Документация
+                        </a>
+                        <a href="{% url 'instruction_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-book"></i> База знаний
+                        </a>
+                        <a href="{% url 'ticket_list' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-ticket-alt"></i> Все заявки
+                        </a>
+                        <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#quickStatsModal">
+                            <i class="fas fa-chart-pie"></i> Быстрая статистика
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно быстрой статистики -->
+<div class="modal fade" id="quickStatsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Быстрая статистика</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Заявки по категориям:</h6>
+                        <ul class="list-group">
+                            {% for category in categories_stats %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ category.category__name|default:"Без категории" }}
+                                <span class="badge bg-primary rounded-pill">{{ category.count }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Заявки по приоритетам:</h6>
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                🔴 Критичный
+                                <span class="badge bg-dark rounded-pill">{{ urgent_tickets }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                🟠 Высокий
+                                <span class="badge bg-danger rounded-pill">{{ high_tickets }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                🟡 Средний
+                                <span class="badge bg-warning rounded-pill">{{ medium_tickets }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                🟢 Низкий
+                                <span class="badge bg-success rounded-pill">{{ low_tickets }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-2px);
+}
+.border-left-primary { border-left: 0.25rem solid #4e73df!important; }
+.border-left-success { border-left: 0.25rem solid #1cc88a!important; }
+.border-left-info { border-left: 0.25rem solid #36b9cc!important; }
+.border-left-warning { border-left: 0.25rem solid #f6c23e!important; }
+</style>
+
+<script>
+// Инициализация модального окна
+document.addEventListener('DOMContentLoaded', function() {
+    var quickStatsModal = document.getElementById('quickStatsModal');
+    if (quickStatsModal) {
+        var modal = new bootstrap.Modal(quickStatsModal);
+    }
+});
+</script>
+{% endblock %}

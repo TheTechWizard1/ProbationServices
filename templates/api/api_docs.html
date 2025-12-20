@@ -1,0 +1,566 @@
+<!-- templates/api/api_docs.html -->
+{% extends 'api/base.html' %}
+{% load static %}
+
+{% block title %}API Документация - ProbationServices{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-5 py-4">
+    <!-- Заголовок и хлебные крошки -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="fas fa-home"></i> Главная</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><i class="fas fa-code"></i> API Документация</li>
+        </ol>
+    </nav>
+
+    <!-- Основной заголовок -->
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="icon-wrapper bg-primary bg-opacity-10 rounded-3 p-3">
+                    <i class="fas fa-code text-primary fs-2"></i>
+                </div>
+                <div>
+                    <h1 class="display-5 fw-bold mb-2">ProbationServices API</h1>
+                    <p class="lead text-muted mb-0">
+                        Полная документация REST API для интеграции системы технической поддержки
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+            <div class="d-flex gap-2 justify-content-lg-end">
+                <a href="#" class="btn btn-outline-primary btn-lg rounded-pill px-4">
+                    <i class="fas fa-download me-2"></i> Postman Collection
+                </a>
+                <a href="#" class="btn btn-primary btn-lg rounded-pill px-4">
+                    <i class="fas fa-key me-2"></i> Получить API ключ
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Боковое меню -->
+        <div class="col-lg-3">
+            <div class="sticky-top" style="top: 20px;">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white border-0 py-3">
+                        <h6 class="mb-0"><i class="fas fa-book me-2"></i> Содержание</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            <a href="#overview" class="list-group-item list-group-item-action border-0 py-3 active">
+                                <i class="fas fa-info-circle me-2"></i> Обзор
+                            </a>
+                            <a href="#authentication" class="list-group-item list-group-item-action border-0 py-3">
+                                <i class="fas fa-key me-2"></i> Аутентификация
+                            </a>
+                            <a href="#endpoints" class="list-group-item list-group-item-action border-0 py-3">
+                                <i class="fas fa-network-wired me-2"></i> Endpoints
+                            </a>
+                            <a href="#tickets" class="list-group-item list-group-item-action border-0 py-3">
+                                <i class="fas fa-ticket-alt me-2"></i> Заявки
+                            </a>
+                            <a href="#instructions" class="list-group-item list-group-item-action border-0 py-3">
+                                <i class="fas fa-book me-2"></i> Инструкции
+                            </a>
+                            <a href="#users" class="list-group-item list-group-item-action border-0 py-3">
+                                <i class="fas fa-users me-2"></i> Пользователи
+                            </a>
+                            <a href="#examples" class="list-group-item list-group-item-action border-0 py-3">
+                                <i class="fas fa-code me-2"></i> Примеры
+                            </a>
+                            <a href="#rate-limiting" class="list-group-item list-group-item-action border-0 py-3">
+                                <i class="fas fa-tachometer-alt me-2"></i> Лимиты
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Базовый URL -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-info text-white border-0 py-3">
+                        <h6 class="mb-0"><i class="fas fa-link me-2"></i> Базовый URL</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control bg-light border-0"
+                                   value="{{ base_url }}"
+                                   readonly
+                                   id="baseUrl">
+                            <button class="btn btn-outline-secondary" type="button" onclick="copyBaseUrl()">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <small class="text-muted mt-2 d-block">
+                            Все API запросы начинаются с этого URL
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="col-lg-9">
+            <!-- Обзор API -->
+            <div class="card border-0 shadow-sm mb-5" id="overview">
+                <div class="card-header bg-transparent border-0 py-4">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="fas fa-info-circle me-2 text-primary"></i>
+                        Обзор ProbationServices API
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p class="lead">
+                        ProbationServices предоставляет полноценное REST API для интеграции системы технической поддержки в ваши приложения.
+                    </p>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex align-items-start">
+                                <div class="icon-wrapper bg-success bg-opacity-10 rounded-3 p-2 me-3">
+                                    <i class="fas fa-database text-success"></i>
+                                </div>
+                                <div>
+                                    <h5>Полный CRUD</h5>
+                                    <p class="text-muted">Создание, чтение, обновление и удаление для заявок, инструкций и пользователей</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex align-items-start">
+                                <div class="icon-wrapper bg-primary bg-opacity-10 rounded-3 p-2 me-3">
+                                    <i class="fas fa-key text-primary"></i>
+                                </div>
+                                <div>
+                                    <h5>Аутентификация</h5>
+                                    <p class="text-muted">JWT токены и стандартная аутентификация Django REST Framework</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex align-items-start">
+                                <div class="icon-wrapper bg-warning bg-opacity-10 rounded-3 p-2 me-3">
+                                    <i class="fas fa-filter text-warning"></i>
+                                </div>
+                                <div>
+                                    <h5>Фильтрация и сортировка</h5>
+                                    <p class="text-muted">Гибкая фильтрация по всем полям и множественная сортировка</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex align-items-start">
+                                <div class="icon-wrapper bg-info bg-opacity-10 rounded-3 p-2 me-3">
+                                    <i class="fas fa-file-alt text-info"></i>
+                                </div>
+                                <div>
+                                    <h5>Пагинация</h5>
+                                    <p class="text-muted">Автоматическая пагинация результатов с настройкой количества элементов</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Версия API:</strong> v1.0.0 |
+                        <strong>Формат данных:</strong> JSON |
+                        <strong>Кодировка:</strong> UTF-8
+                    </div>
+                </div>
+            </div>
+
+            <!-- Аутентификация -->
+            <div class="card border-0 shadow-sm mb-5" id="authentication">
+                <div class="card-header bg-transparent border-0 py-4">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="fas fa-key me-2 text-warning"></i>
+                        Аутентификация
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p>
+                        Для доступа к защищенным endpoint'ам требуется токен аутентификации.
+                        Поддерживаются два типа аутентификации:
+                    </p>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card h-100 border-primary">
+                                <div class="card-header bg-primary bg-opacity-10 text-primary border-0">
+                                    <h5 class="mb-0">Token Authentication</h5>
+                                </div>
+                                <div class="card-body">
+                                    <h6>Получение токена:</h6>
+                                    <pre class="bg-dark text-light p-3 rounded"><code>POST {{ base_url }}api-token-auth/
+Content-Type: application/json
+
+{
+    "username": "ваш_логин",
+    "password": "ваш_пароль"
+}</code></pre>
+
+                                    <h6 class="mt-3">Использование токена:</h6>
+                                    <div class="bg-light p-3 rounded">
+                                        <code>Authorization: Token ваш_токен_доступа</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card h-100 border-success">
+                                <div class="card-header bg-success bg-opacity-10 text-success border-0">
+                                    <h5 class="mb-0">JWT Authentication</h5>
+                                </div>
+                                <div class="card-body">
+                                    <h6>Получение JWT токена:</h6>
+                                    <pre class="bg-dark text-light p-3 rounded"><code>POST {{ base_url }}api/token/
+Content-Type: application/json
+
+{
+    "username": "ваш_логин",
+    "password": "ваш_пароль"
+}</code></pre>
+
+                                    <h6 class="mt-3">Использование JWT:</h6>
+                                    <div class="bg-light p-3 rounded">
+                                        <code>Authorization: Bearer ваш_jwt_токен</code>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i>
+                                            JWT токены действительны 24 часа
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning mt-4">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Важно:</strong> Никогда не храните токены в клиентском коде. Используйте переменные окружения или серверные настройки.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Основные Endpoints -->
+            <div class="card border-0 shadow-sm mb-5" id="endpoints">
+                <div class="card-header bg-transparent border-0 py-4">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="fas fa-network-wired me-2 text-info"></i>
+                        Основные Endpoints
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Endpoint</th>
+                                    <th>Метод</th>
+                                    <th>Описание</th>
+                                    <th>Требует аутентификации</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>/api/tickets/</code></td>
+                                    <td><span class="badge bg-primary">GET, POST</span></td>
+                                    <td>Список и создание заявок</td>
+                                    <td><span class="badge bg-success">Да</span></td>
+                                </tr>
+                                <tr>
+                                    <td><code>/api/tickets/{id}/</code></td>
+                                    <td><span class="badge bg-primary">GET, PUT, PATCH, DELETE</span></td>
+                                    <td>Детали, обновление, удаление заявки</td>
+                                    <td><span class="badge bg-success">Да</span></td>
+                                </tr>
+                                <tr>
+                                    <td><code>/api/instructions/</code></td>
+                                    <td><span class="badge bg-primary">GET, POST</span></td>
+                                    <td>Список и создание инструкций</td>
+                                    <td><span class="badge bg-warning">Только GET</span></td>
+                                </tr>
+                                <tr>
+                                    <td><code>/api/instructions/{id}/</code></td>
+                                    <td><span class="badge bg-primary">GET, PUT, PATCH, DELETE</span></td>
+                                    <td>Детали, обновление, удаление инструкции</td>
+                                    <td><span class="badge bg-success">Да</span></td>
+                                </tr>
+                                <tr>
+                                    <td><code>/api/users/</code></td>
+                                    <td><span class="badge bg-primary">GET, POST</span></td>
+                                    <td>Список и регистрация пользователей</td>
+                                    <td><span class="badge bg-warning">Только POST</span></td>
+                                </tr>
+                                <tr>
+                                    <td><code>/api/users/{id}/</code></td>
+                                    <td><span class="badge bg-primary">GET, PUT, PATCH</span></td>
+                                    <td>Детали и обновление пользователя</td>
+                                    <td><span class="badge bg-success">Да</span></td>
+                                </tr>
+                                <tr>
+                                    <td><code>/api/statistics/</code></td>
+                                    <td><span class="badge bg-primary">GET</span></td>
+                                    <td>Статистика системы</td>
+                                    <td><span class="badge bg-success">Да</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Примеры запросов -->
+            <div class="card border-0 shadow-sm mb-5" id="examples">
+                <div class="card-header bg-transparent border-0 py-4">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="fas fa-code me-2 text-secondary"></i>
+                        Примеры запросов
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header bg-dark text-white">
+                                    <h6 class="mb-0">Получение списка заявок</h6>
+                                </div>
+                                <div class="card-body">
+                                    <pre class="bg-light p-3 rounded"><code>curl -X GET \
+  '{{ base_url }}api/tickets/?status=open&priority=high' \
+  -H 'Authorization: Token ваш_токен_доступа' \
+  -H 'Content-Type: application/json'</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header bg-dark text-white">
+                                    <h6 class="mb-0">Создание новой заявки</h6>
+                                </div>
+                                <div class="card-body">
+                                    <pre class="bg-light p-3 rounded"><code>curl -X POST \
+  '{{ base_url }}api/tickets/' \
+  -H 'Authorization: Token ваш_токен_доступа' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "title": "Проблема с принтером",
+    "description": "Принтер не печатает",
+    "category": "hardware",
+    "priority": "medium"
+  }'</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header bg-dark text-white">
+                                    <h6 class="mb-0">Обновление заявки</h6>
+                                </div>
+                                <div class="card-body">
+                                    <pre class="bg-light p-3 rounded"><code>curl -X PATCH \
+  '{{ base_url }}api/tickets/1/' \
+  -H 'Authorization: Token ваш_токен_доступа' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "status": "in_progress",
+    "assigned_to": 2
+  }'</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header bg-dark text-white">
+                                    <h6 class="mb-0">Поиск инструкций</h6>
+                                </div>
+                                <div class="card-body">
+                                    <pre class="bg-light p-3 rounded"><code>curl -X GET \
+  '{{ base_url }}api/instructions/?search=принтер&category=hardware' \
+  -H 'Content-Type: application/json'</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Лимиты запросов -->
+            <div class="card border-0 shadow-sm" id="rate-limiting">
+                <div class="card-header bg-transparent border-0 py-4">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="fas fa-tachometer-alt me-2 text-danger"></i>
+                        Лимиты запросов
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <p>Для обеспечения стабильной работы системы установлены следующие лимиты:</p>
+                            <ul>
+                                <li><strong>Анонимные пользователи:</strong> 60 запросов в час</li>
+                                <li><strong>Авторизованные пользователи:</strong> 1000 запросов в час</li>
+                                <li><strong>Администраторы:</strong> 5000 запросов в час</li>
+                                <li><strong>Пакетные запросы (bulk):</strong> Не более 100 объектов за один запрос</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light border-0">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                                    <h5>Защита от DDoS</h5>
+                                    <p class="text-muted small">Активная защита от чрезмерной нагрузки</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success mt-4">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Хорошие практики:</strong> Используйте кэширование, избегайте частых повторных запросов,
+                        реализуйте обработку ошибок и повторные попытки.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Стили для документации API */
+    .sticky-top {
+        position: -webkit-sticky;
+        position: sticky;
+    }
+
+    .list-group-item.active {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+    }
+
+    .icon-wrapper {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bg-opacity-10 {
+        --bs-bg-opacity: 0.1;
+    }
+
+    pre {
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+
+    code {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.9em;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    .badge.bg-primary {
+        padding: 0.35em 0.65em;
+    }
+
+    .card.border-primary {
+        border-width: 2px;
+    }
+
+    .card.border-success {
+        border-width: 2px;
+    }
+
+    /* Стили для прокрутки к якорям */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    h3[id], h4[id], h5[id] {
+        scroll-margin-top: 80px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Копирование базового URL
+        window.copyBaseUrl = function() {
+            const baseUrl = document.getElementById('baseUrl');
+            baseUrl.select();
+            baseUrl.setSelectionRange(0, 99999); // Для мобильных устройств
+            navigator.clipboard.writeText(baseUrl.value);
+
+            // Показываем уведомление
+            const originalText = event.target.innerHTML;
+            event.target.innerHTML = '<i class="fas fa-check"></i>';
+            event.target.classList.remove('btn-outline-secondary');
+            event.target.classList.add('btn-success');
+
+            setTimeout(() => {
+                event.target.innerHTML = originalText;
+                event.target.classList.remove('btn-success');
+                event.target.classList.add('btn-outline-secondary');
+            }, 2000);
+        };
+
+        // Подсветка активного раздела в навигации
+        const sections = document.querySelectorAll('h3[id], h4[id], h5[id]');
+        const navLinks = document.querySelectorAll('.list-group-item-action');
+
+        window.addEventListener('scroll', function() {
+            let current = '';
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Подсветка синтаксиса для кода
+        document.querySelectorAll('pre code').forEach((block) => {
+            // Простая подсветка ключевых слов
+            const code = block.innerHTML;
+            const highlighted = code
+                .replace(/(GET|POST|PUT|PATCH|DELETE)/g, '<span class="text-primary fw-bold">$1</span>')
+                .replace(/(curl|HTTP|Content-Type|Authorization)/g, '<span class="text-success fw-bold">$1</span>')
+                .replace(/(\{\s*[^}]*\s*\})/g, '<span class="text-warning">$1</span>');
+            block.innerHTML = highlighted;
+        });
+
+        // Анимация для таблицы endpoints
+        const tableRows = document.querySelectorAll('.table-hover tbody tr');
+        tableRows.forEach((row, index) => {
+            row.style.animationDelay = `${index * 50}ms`;
+            row.classList.add('animate__animated', 'animate__fadeIn');
+        });
+    });
+</script>
+{% endblock %}

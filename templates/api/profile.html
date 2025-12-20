@@ -1,0 +1,604 @@
+<!-- templates/api/profile.html -->
+{% extends 'api/base.html' %}
+{% load static %}
+
+{% block title %}Личный кабинет - ProbationServices{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-5 py-4">
+    <!-- Заголовок и хлебные крошки -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="fas fa-home"></i> Главная</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><i class="fas fa-user-circle"></i> Личный кабинет</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Основная информация слева -->
+        <div class="col-lg-8">
+            <!-- Карточка профиля -->
+            <div class="card border-0 shadow-sm mb-4 hover-lift">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-3 text-center">
+                            <div class="avatar-profile mb-3">
+                                <div class="avatar-inner bg-primary bg-gradient rounded-circle d-flex align-items-center justify-content-center"
+                                     style="width: 120px; height: 120px;">
+                                    {% if user.first_name and user.last_name %}
+                                    <span class="text-white display-5 fw-bold">
+                                        {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                                    </span>
+                                    {% else %}
+                                    <i class="fas fa-user text-white" style="font-size: 48px;"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="mt-3">
+                                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                        <i class="fas fa-camera me-1"></i> Изменить фото
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-9">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h2 class="mb-1 fw-bold">{{ user.get_full_name|default:user.username }}</h2>
+                                    <p class="text-muted mb-0">
+                                        <i class="fas fa-at me-1"></i> {{ user.username }}
+                                    </p>
+                                </div>
+                                <div>
+                                    <span class="badge {% if user.profile.role == 'admin' %}bg-danger{% elif user.profile.role == 'specialist' %}bg-warning{% else %}bg-primary{% endif %} rounded-pill px-3 py-2">
+                                        <i class="fas fa-user-tag me-1"></i> {{ user.profile.get_role_display }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="info-card p-3 rounded-3 bg-light mb-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="icon-wrapper bg-primary bg-opacity-10 rounded-3 p-2 me-3">
+                                                <i class="fas fa-envelope text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <small class="text-muted d-block">Email</small>
+                                                <strong>{{ user.email|default:"Не указан" }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-card p-3 rounded-3 bg-light mb-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="icon-wrapper bg-success bg-opacity-10 rounded-3 p-2 me-3">
+                                                <i class="fas fa-calendar-alt text-success"></i>
+                                            </div>
+                                            <div>
+                                                <small class="text-muted d-block">Дата регистрации</small>
+                                                <strong>{{ user.date_joined|date:"d.m.Y H:i" }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="info-card p-3 rounded-3 bg-light mb-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="icon-wrapper bg-warning bg-opacity-10 rounded-3 p-2 me-3">
+                                                <i class="fas fa-id-card text-warning"></i>
+                                            </div>
+                                            <div>
+                                                <small class="text-muted d-block">Имя</small>
+                                                <strong>{{ user.first_name|default:"Не указано" }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-card p-3 rounded-3 bg-light mb-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="icon-wrapper bg-info bg-opacity-10 rounded-3 p-2 me-3">
+                                                <i class="fas fa-id-card text-info"></i>
+                                            </div>
+                                            <div>
+                                                <small class="text-muted d-block">Фамилия</small>
+                                                <strong>{{ user.last_name|default:"Не указана" }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% if user.profile.department %}
+                            <div class="mt-4">
+                                <div class="d-flex align-items-center p-3 rounded-3" style="background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
+                                    <div class="icon-wrapper bg-dark bg-opacity-10 rounded-3 p-2 me-3">
+                                        <i class="fas fa-building text-dark"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Подразделение</small>
+                                        <strong>{{ user.profile.department }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-transparent border-top-0 d-flex justify-content-end">
+                    <button class="btn btn-outline-primary rounded-pill me-2">
+                        <i class="fas fa-edit me-1"></i> Редактировать профиль
+                    </button>
+                    <button class="btn btn-outline-secondary rounded-pill">
+                        <i class="fas fa-key me-1"></i> Сменить пароль
+                    </button>
+                </div>
+            </div>
+
+            <!-- Моя статистика -->
+            <div class="card border-0 shadow-sm mb-4 hover-lift">
+                <div class="card-header bg-transparent border-0 py-4">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-wrapper bg-primary bg-opacity-10 rounded-3 p-2 me-3">
+                            <i class="fas fa-chart-line text-primary fs-4"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-1 fw-bold">Моя статистика</h4>
+                            <p class="text-muted mb-0">Обзор активности в системе</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="stat-card p-4 rounded-3">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="icon-wrapper bg-primary bg-opacity-10 rounded-3 p-2 me-3">
+                                        <i class="fas fa-ticket-alt text-primary fs-3"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h2 class="mb-0 fw-bold">{{ my_tickets_count }}</h2>
+                                        <small class="text-muted">Мои заявки</small>
+                                    </div>
+                                </div>
+                                <div class="progress" style="height: 4px;">
+                                    <div class="progress-bar bg-primary" style="width: {{ my_tickets_percent|default:'100' }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6">
+                            <div class="stat-card p-4 rounded-3">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="icon-wrapper bg-warning bg-opacity-10 rounded-3 p-2 me-3">
+                                        <i class="fas fa-clock text-warning fs-3"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h2 class="mb-0 fw-bold">{{ open_tickets_count }}</h2>
+                                        <small class="text-muted">Активные</small>
+                                    </div>
+                                </div>
+                                <div class="progress" style="height: 4px;">
+                                    <div class="progress-bar bg-warning" style="width: {{ open_tickets_percent|default:'30' }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6">
+                            <div class="stat-card p-4 rounded-3">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="icon-wrapper bg-success bg-opacity-10 rounded-3 p-2 me-3">
+                                        <i class="fas fa-check-circle text-success fs-3"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h2 class="mb-0 fw-bold">{{ resolved_tickets_count }}</h2>
+                                        <small class="text-muted">Решено</small>
+                                    </div>
+                                </div>
+                                <div class="progress" style="height: 4px;">
+                                    <div class="progress-bar bg-success" style="width: {{ resolved_tickets_percent|default:'70' }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6">
+                            <div class="stat-card p-4 rounded-3">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="icon-wrapper bg-info bg-opacity-10 rounded-3 p-2 me-3">
+                                        <i class="fas fa-book text-info fs-3"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h2 class="mb-0 fw-bold">{{ my_instructions_count }}</h2>
+                                        <small class="text-muted">Мои инструкции</small>
+                                    </div>
+                                </div>
+                                <div class="progress" style="height: 4px;">
+                                    <div class="progress-bar bg-info" style="width: {{ my_instructions_percent|default:'40' }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Дополнительная статистика для специалистов -->
+                    {% if user.profile.role in 'specialist,admin' %}
+                    <div class="row mt-5">
+                        <div class="col-12">
+                            <div class="border-top pt-4">
+                                <h6 class="mb-3 fw-bold">Дополнительная статистика</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <div class="text-center p-3 rounded-3 bg-light">
+                                            <h5 class="text-primary mb-1">{{ avg_response_time|default:"15" }} мин</h5>
+                                            <small class="text-muted">Среднее время ответа</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-center p-3 rounded-3 bg-light">
+                                            <h5 class="text-success mb-1">{{ satisfaction_rate|default:"92" }}%</h5>
+                                            <small class="text-muted">Удовлетворенность</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-center p-3 rounded-3 bg-light">
+                                            <h5 class="text-warning mb-1">{{ assigned_tickets_count|default:"5" }}</h5>
+                                            <small class="text-muted">Назначенные заявки</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Правая колонка -->
+        <div class="col-lg-4">
+            <!-- Быстрые действия -->
+            <div class="card border-0 shadow-sm mb-4 hover-lift">
+                <div class="card-header bg-transparent border-0 py-4">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-wrapper bg-success bg-opacity-10 rounded-3 p-2 me-3">
+                            <i class="fas fa-bolt text-success fs-4"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold">Быстрые действия</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        <a href="{% url 'ticket_create' %}" class="btn btn-primary btn-lg rounded-pill py-3">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-wrapper bg-white bg-opacity-25 rounded-circle p-2 me-3">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
+                                    <div class="text-start">
+                                        <div class="fw-bold">Новая заявка</div>
+                                        <small class="opacity-75">Создать обращение</small>
+                                    </div>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </a>
+
+                        <a href="{% url 'ticket_list' %}" class="btn btn-outline-primary btn-lg rounded-pill py-3">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-wrapper bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                        <i class="fas fa-list"></i>
+                                    </div>
+                                    <div class="text-start">
+                                        <div class="fw-bold">Мои заявки</div>
+                                        <small class="opacity-75">{{ my_tickets_count }} активных</small>
+                                    </div>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </a>
+
+                        <a href="{% url 'instruction_list' %}" class="btn btn-outline-success btn-lg rounded-pill py-3">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-wrapper bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                        <i class="fas fa-book"></i>
+                                    </div>
+                                    <div class="text-start">
+                                        <div class="fw-bold">База знаний</div>
+                                        <small class="opacity-75">{{ total_instructions }} инструкций</small>
+                                    </div>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </a>
+
+                        {% if user.profile.role in 'specialist,admin' %}
+                        <a href="/admin/" class="btn btn-outline-warning btn-lg rounded-pill py-3">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-wrapper bg-warning bg-opacity-10 rounded-circle p-2 me-3">
+                                        <i class="fas fa-cog"></i>
+                                    </div>
+                                    <div class="text-start">
+                                        <div class="fw-bold">Панель управления</div>
+                                        <small class="opacity-75">Администрирование</small>
+                                    </div>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Последние заявки -->
+            <div class="card border-0 shadow-sm mb-4 hover-lift">
+                <div class="card-header bg-transparent border-0 py-4">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-wrapper bg-info bg-opacity-10 rounded-3 p-2 me-3">
+                            <i class="fas fa-history text-info fs-4"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold">Последние заявки</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    {% if recent_tickets %}
+                    <div class="list-group list-group-flush">
+                        {% for ticket in recent_tickets %}
+                        <a href="{% url 'ticket_detail' ticket.id %}"
+                           class="list-group-item list-group-item-action border-0 py-3 px-0">
+                            <div class="d-flex align-items-start">
+                                <div class="me-3">
+                                    {% if ticket.status == 'open' %}
+                                    <div class="icon-wrapper bg-danger bg-opacity-10 rounded-3 p-2">
+                                        <i class="fas fa-inbox text-danger"></i>
+                                    </div>
+                                    {% elif ticket.status == 'in_progress' %}
+                                    <div class="icon-wrapper bg-warning bg-opacity-10 rounded-3 p-2">
+                                        <i class="fas fa-tasks text-warning"></i>
+                                    </div>
+                                    {% else %}
+                                    <div class="icon-wrapper bg-success bg-opacity-10 rounded-3 p-2">
+                                        <i class="fas fa-check text-success"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                        <h6 class="mb-0 fw-bold">{{ ticket.title|truncatechars:30 }}</h6>
+                                        <small class="text-muted">{{ ticket.created_at|date:"H:i" }}</small>
+                                    </div>
+                                    <small class="text-muted d-block">{{ ticket.created_at|date:"d.m.Y" }}</small>
+                                    <div class="mt-2">
+                                        {% if ticket.priority == 'high' %}
+                                        <span class="badge bg-danger bg-opacity-10 text-danger">Высокий приоритет</span>
+                                        {% elif ticket.priority == 'urgent' %}
+                                        <span class="badge bg-dark bg-opacity-10 text-dark">Критичный</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        {% if not forloop.last %}
+                        <hr class="my-2 opacity-25">
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <div class="mb-3">
+                            <i class="fas fa-inbox fa-3x text-muted opacity-25"></i>
+                        </div>
+                        <h6 class="text-muted mb-2">Нет заявок</h6>
+                        <a href="{% url 'ticket_create' %}" class="btn btn-sm btn-outline-primary rounded-pill">
+                            Создать первую заявку
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-4 text-center">
+                        <a href="{% url 'ticket_list' %}" class="btn btn-sm btn-outline-secondary rounded-pill">
+                            <i class="fas fa-list me-1"></i> Все заявки
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Информация о системе -->
+            <div class="card border-0 shadow-sm hover-lift">
+                <div class="card-body p-4 text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-headset fa-3x text-primary mb-3"></i>
+                        <h5 class="fw-bold">ProbationServices</h5>
+                        <p class="text-muted small">Система технической поддержки</p>
+                    </div>
+
+                    <div class="row text-start">
+                        <div class="col-md-6 mb-3">
+                            <h6 class="fw-bold mb-3">Быстрые ссылки</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <a href="{% url 'home' %}" class="text-decoration-none text-muted small">
+                                        <i class="fas fa-home me-1"></i> Главная
+                                    </a>
+                                </li>
+                                <li class="mb-2">
+                                    <a href="{% url 'instruction_list' %}" class="text-decoration-none text-muted small">
+                                        <i class="fas fa-book me-1"></i> База знаний
+                                    </a>
+                                </li>
+                                <li class="mb-2">
+                                    <a href="{% url 'ticket_list' %}" class="text-decoration-none text-muted small">
+                                        <i class="fas fa-ticket-alt me-1"></i> Мои заявки
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'profile' %}" class="text-decoration-none text-muted small">
+                                        <i class="fas fa-user me-1"></i> Профиль
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <h6 class="fw-bold mb-3">Контакты</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-envelope me-1"></i> support@probationservices.local
+                                    </small>
+                                </li>
+                                <li class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-phone me-1"></i> +996 (000) 000-00-00
+                                    </small>
+                                </li>
+                                <li>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i> 24/7 поддержка
+                                    </small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    {% if user.profile.role in 'specialist,admin' %}
+                    <div class="border-top pt-3 mt-3">
+                        <h6 class="fw-bold mb-3">Разработчикам</h6>
+                        <div class="d-flex flex-wrap gap-2 justify-content-center">
+                            <a href="#" class="btn btn-sm btn-outline-secondary rounded-pill">
+                                API Документация
+                            </a>
+                            <a href="#" class="btn btn-sm btn-outline-secondary rounded-pill">
+                                REST API
+                            </a>
+                            <a href="#" class="btn btn-sm btn-outline-secondary rounded-pill">
+                                Экспорт данных
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Стили для страницы профиля */
+    .hover-lift {
+        transition: all 0.3s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .avatar-profile .avatar-inner {
+        transition: all 0.3s ease;
+    }
+
+    .avatar-profile:hover .avatar-inner {
+        transform: scale(1.05);
+    }
+
+    .icon-wrapper {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bg-opacity-10 {
+        --bs-bg-opacity: 0.1;
+    }
+
+    .bg-opacity-25 {
+        --bs-bg-opacity: 0.25;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #ffffff, #f8f9fa);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-card:hover {
+        background: linear-gradient(135deg, #ffffff, #f0f2f5);
+    }
+
+    .info-card {
+        transition: all 0.3s ease;
+    }
+
+    .info-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .list-group-item-action:hover {
+        background-color: rgba(13, 110, 253, 0.05) !important;
+    }
+
+    .btn.btn-lg .icon-wrapper {
+        width: 36px;
+        height: 36px;
+    }
+
+    .btn-primary .icon-wrapper {
+        background: rgba(255, 255, 255, 0.2);
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Анимация для статистических карточек
+        const statCards = document.querySelectorAll('.stat-card');
+        statCards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 100}ms`;
+            card.classList.add('animate__animated', 'animate__fadeInUp');
+        });
+
+        // Обновление времени активности
+        function updateActivityTime() {
+            const now = new Date();
+            const options = {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            const timeString = now.toLocaleDateString('ru-RU', options);
+
+            // Если есть элемент для отображения времени, обновляем его
+            const timeElement = document.getElementById('lastActivityTime');
+            if (timeElement) {
+                timeElement.textContent = timeString;
+            }
+        }
+
+        // Обновляем время каждую минуту
+        updateActivityTime();
+        setInterval(updateActivityTime, 60000);
+
+        // Подсветка активного элемента в быстрых ссылках
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.list-group-item-action').forEach(item => {
+            if (item.getAttribute('href') === currentPath) {
+                item.classList.add('active');
+            }
+        });
+    });
+</script>
+{% endblock %}

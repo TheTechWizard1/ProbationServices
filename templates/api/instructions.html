@@ -1,0 +1,451 @@
+{% extends 'api/base.html' %}
+{% load static %}
+
+{% block title %}База знаний - ProbationServices{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-5 py-4">
+    <!-- Заголовок и хлебные крошки -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="fas fa-home"></i> Главная</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><i class="fas fa-book"></i> База знаний</li>
+        </ol>
+    </nav>
+
+    <!-- Основной заголовок -->
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="icon-wrapper bg-primary bg-opacity-10 rounded-3 p-3">
+                    <i class="fas fa-book text-primary fs-2"></i>
+                </div>
+                <div>
+                    <h1 class="display-5 fw-bold mb-2">База знаний</h1>
+                    <p class="lead text-muted mb-0">Поиск инструкций и руководств по решению технических проблем</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+            {% if user.profile.role in 'specialist,admin' %}
+            <a href="#" class="btn btn-success btn-lg rounded-pill px-4">
+                <i class="fas fa-plus-circle me-2"></i> Добавить инструкцию
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Панель поиска и фильтров -->
+    <div class="card border-0 shadow-lg mb-5">
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <form method="get" class="search-form">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-transparent border-end-0">
+                                <i class="fas fa-search text-primary"></i>
+                            </span>
+                            <input type="text"
+                                   class="form-control border-start-0 ps-2"
+                                   name="search"
+                                   placeholder="Поиск по инструкциям..."
+                                   value="{{ request.GET.search }}"
+                                   style="font-size: 1.1rem;">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-search me-2"></i> Найти
+                            </button>
+                        </div>
+                        <div class="form-text mt-2 text-muted">
+                            <i class="fas fa-lightbulb me-1"></i>
+                            Попробуйте: "сброс пароля", "почта", "принтер", "сеть"
+                        </div>
+                    </form>
+                </div>
+                <div class="col-lg-4">
+                    <div class="d-flex align-items-center h-100">
+                        <select class="form-select form-select-lg" id="categoryFilter">
+                            <option value="">Все категории</option>
+                            {% for value, label in categories %}
+                            <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статистика в виде карточек -->
+    <div class="row g-4 mb-5">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-wrapper bg-primary bg-opacity-10 rounded-3 p-3 me-3">
+                            <i class="fas fa-file-alt text-primary fs-3"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0 fw-bold">{{ instructions.paginator.count }}</h3>
+                            <p class="text-muted mb-0">Найдено инструкций</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-wrapper bg-success bg-opacity-10 rounded-3 p-3 me-3">
+                            <i class="fas fa-eye text-success fs-3"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0 fw-bold">{{ total_views|default:"0" }}</h3>
+                            <p class="text-muted mb-0">Всего просмотров</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-wrapper bg-info bg-opacity-10 rounded-3 p-3 me-3">
+                            <i class="fas fa-book text-info fs-3"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0 fw-bold">{{ total_instructions }}</h3>
+                            <p class="text-muted mb-0">Всего инструкций</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-wrapper bg-warning bg-opacity-10 rounded-3 p-3 me-3">
+                            <i class="fas fa-calendar-alt text-warning fs-3"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0 fw-bold">{{ last_update|date:"d.m.Y"|default:"-" }}</h3>
+                            <p class="text-muted mb-0">Последнее обновление</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="row">
+        <!-- Список инструкций -->
+        <div class="col-lg-8">
+            {% if instructions %}
+            <div class="row g-4">
+                {% for instruction in instructions %}
+                <div class="col-12">
+                    <div class="card instruction-card border-0 shadow-sm h-100 hover-lift">
+                        <div class="card-body p-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <div class="d-flex align-items-start mb-3">
+                                        <div class="me-3">
+                                            <div class="icon-wrapper bg-primary bg-opacity-10 rounded-3 p-2">
+                                                <i class="fas fa-book-open text-primary"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="d-flex flex-wrap gap-2 mb-2">
+                                                <span class="badge bg-primary bg-opacity-10 text-primary">
+                                                    {{ instruction.get_category_display }}
+                                                </span>
+                                                <span class="badge bg-secondary bg-opacity-10 text-secondary">
+                                                    <i class="fas fa-eye me-1"></i> {{ instruction.view_count|default:"0" }}
+                                                </span>
+                                            </div>
+                                            <h4 class="card-title mb-3">{{ instruction.title }}</h4>
+                                            <p class="card-text text-muted mb-4">{{ instruction.content|truncatewords:40 }}</p>
+
+                                            <div class="d-flex flex-wrap gap-3 align-items-center">
+                                                <div class="text-muted small">
+                                                    <i class="fas fa-user me-1"></i> {{ instruction.created_by.get_full_name|default:instruction.created_by.username }}
+                                                </div>
+                                                <div class="text-muted small">
+                                                    <i class="far fa-clock me-1"></i> {{ instruction.created_at|date:"d.m.Y" }}
+                                                </div>
+                                                <div class="text-muted small">
+                                                    <i class="fas fa-clock me-1"></i> 5 мин чтения
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-md-end">
+                                    <a href="{% url 'instruction_detail' instruction.pk %}"
+                                       class="btn btn-primary btn-lg rounded-pill px-4 py-2">
+                                        Читать <i class="fas fa-arrow-right ms-2"></i>
+                                    </a>
+                                    {% if user.profile.role in 'specialist,admin' %}
+                                    <div class="mt-3">
+                                        <a href="#" class="btn btn-sm btn-outline-secondary me-2">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="text-muted small">
+                                    <i class="fas fa-tags me-1"></i>
+                                    {% for tag in instruction.tags.all %}
+                                    <span class="badge bg-light text-dark me-1">{{ tag.name }}</span>
+                                    {% empty %}
+                                    <span class="text-muted">Без тегов</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="text-muted small">
+                                    ID: {{ instruction.pk }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Пагинация -->
+            {% if instructions.has_other_pages %}
+            <nav class="mt-5" aria-label="Навигация по страницам">
+                <ul class="pagination justify-content-center">
+                    {% if instructions.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}page=1"
+                           aria-label="Первая">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ instructions.previous_page_number }}"
+                           aria-label="Предыдущая">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in instructions.paginator.page_range %}
+                        {% if num >= instructions.number|add:"-2" and num <= instructions.number|add:"2" %}
+                        <li class="page-item {% if instructions.number == num %}active{% endif %}">
+                            <a class="page-link"
+                               href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ num }}">
+                                {{ num }}
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if instructions.has_next %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ instructions.next_page_number }}"
+                           aria-label="Следующая">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ instructions.paginator.num_pages }}"
+                           aria-label="Последняя">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <p class="text-center text-muted mt-2">
+                    Страница {{ instructions.number }} из {{ instructions.paginator.num_pages }}
+                </p>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <!-- Сообщение, если инструкций нет -->
+            <div class="text-center py-6">
+                <div class="mb-4">
+                    <i class="fas fa-search fa-4x text-muted opacity-25"></i>
+                </div>
+                <h3 class="mb-3">Инструкции не найдены</h3>
+                <p class="text-muted mb-4 lead">
+                    {% if request.GET.search or selected_category %}
+                    Попробуйте изменить параметры поиска или <a href="{% url 'instruction_list' %}" class="text-decoration-none">сбросить фильтры</a>.
+                    {% else %}
+                    База знаний пока пуста. Инструкции будут добавлены администратором.
+                    {% endif %}
+                </p>
+                {% if user.profile.role in 'specialist,admin' %}
+                <a href="#" class="btn btn-primary btn-lg rounded-pill px-4">
+                    <i class="fas fa-plus-circle me-2"></i> Добавить первую инструкцию
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Боковая панель -->
+        <div class="col-lg-4">
+            <!-- Популярные инструкции -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white border-0 py-3">
+                    <h5 class="mb-0"><i class="fas fa-fire me-2"></i> Популярные инструкции</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for pop_instruction in popular_instructions|slice:":5" %}
+                        <a href="{% url 'instruction_detail' pop_instruction.pk %}"
+                           class="list-group-item list-group-item-action border-0 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ pop_instruction.title|truncatechars:50 }}</h6>
+                                    <small class="text-muted">{{ pop_instruction.get_category_display }}</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">{{ pop_instruction.view_count }}</span>
+                            </div>
+                        </a>
+                        {% empty %}
+                        <div class="text-center py-3">
+                            <i class="fas fa-chart-line fa-2x text-muted mb-3"></i>
+                            <p class="text-muted mb-0">Пока нет популярных инструкций</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Категории -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white border-0 py-3">
+                    <h5 class="mb-0"><i class="fas fa-folder me-2"></i> Категории</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="?category="
+                           class="list-group-item list-group-item-action border-0 py-2 {% if not selected_category %}active{% endif %}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Все категории</span>
+                                <span class="badge bg-secondary rounded-pill">{{ total_instructions }}</span>
+                            </div>
+                        </a>
+                        {% for value, label in categories %}
+                        <a href="?category={{ value }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+                           class="list-group-item list-group-item-action border-0 py-2 {% if selected_category == value %}active{% endif %}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>{{ label }}</span>
+                                <span class="badge bg-secondary rounded-pill">{{ value.instruction_count }}</span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Последние обновления -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-info text-white border-0 py-3">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i> Последние обновления</h5>
+                </div>
+                <div class="card-body">
+                    {% for recent in recent_instructions|slice:":3" %}
+                    <div class="mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+                        <small class="text-muted d-block mb-1">
+                            {{ recent.updated_at|date:"d.m.Y H:i" }}
+                        </small>
+                        <a href="{% url 'instruction_detail' recent.pk %}" class="text-decoration-none">
+                            {{ recent.title|truncatechars:60 }}
+                        </a>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-3">
+                        <i class="fas fa-clock fa-2x text-muted mb-3"></i>
+                        <p class="text-muted mb-0">Нет обновлений</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Стили для страницы инструкций */
+    .search-form .input-group:focus-within {
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        border-radius: 10px;
+    }
+
+    .hover-lift {
+        transition: all 0.3s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .instruction-card {
+        border-left: 4px solid var(--bs-primary);
+    }
+
+    .list-group-item.active {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+    }
+
+    .icon-wrapper {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bg-opacity-10 {
+        --bs-bg-opacity: 0.1;
+    }
+</style>
+
+<script>
+    // JavaScript для фильтрации по категориям
+    document.getElementById('categoryFilter').addEventListener('change', function() {
+        const category = this.value;
+        const search = new URLSearchParams(window.location.search).get('search') || '';
+        let url = '{% url "instruction_list" %}?';
+
+        if (search) url += `search=${search}&`;
+        if (category) url += `category=${category}`;
+
+        window.location.href = url;
+    });
+
+    // Подсветка поискового запроса
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchParam = new URLSearchParams(window.location.search).get('search');
+        if (searchParam) {
+            document.querySelectorAll('.card-title').forEach(title => {
+                const regex = new RegExp(`(${searchParam})`, 'gi');
+                title.innerHTML = title.textContent.replace(regex, '<mark>$1</mark>');
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,58 @@
+<!-- templates/api/instruction_detail.html -->
+{% extends 'api/base.html' %}
+
+{% block title %}{{ instruction.title }} - ProbationServices{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'instruction_list' %}">База знаний</a></li>
+            <li class="breadcrumb-item active">{{ instruction.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">{{ instruction.title }}</h1>
+                <span class="badge bg-secondary fs-6">{{ instruction.get_category_display }}</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="instruction-meta mb-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <i class="fas fa-user"></i> Автор: {{ instruction.created_by.get_full_name|default:instruction.created_by.username }}
+                        </small>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <small class="text-muted">
+                            <i class="fas fa-eye"></i> Просмотров: {{ instruction.view_count }} |
+                            <i class="fas fa-calendar"></i> {{ instruction.created_at|date:"d.m.Y H:i" }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="instruction-content">
+                {{ instruction.content|linebreaks }}
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="{% url 'instruction_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Назад к списку
+                </a>
+                {% if user.is_authenticated and user.profile.role in 'specialist,admin' %}
+                <a href="/admin/api/instruction/{{ instruction.id }}/change/" class="btn btn-outline-primary">
+                    <i class="fas fa-edit"></i> Редактировать
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
