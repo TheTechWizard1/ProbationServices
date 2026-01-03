@@ -21,12 +21,12 @@
                 <div class="d-flex flex-wrap gap-3">
                     <a href="{% url 'instruction_list' %}" class="btn btn-light btn-lg px-4 py-3 rounded-pill shadow-lg">
                         <i class="fas fa-book me-2"></i> База знаний
-                        <small class="d-block text-muted mt-1">250+ инструкций</small>
+                        <!--<small class="d-block text-muted mt-1">250+ инструкций</small>-->
                     </a>
                     {% if user.is_authenticated %}
                         <a href="{% url 'ticket_create' %}" class="btn btn-warning btn-lg px-4 py-3 rounded-pill shadow-lg">
                             <i class="fas fa-plus-circle me-2"></i> Новая заявка
-                            <small class="d-block text-dark mt-1">Среднее время ответа: 15 мин</small>
+                           <!-- <small class="d-block text-dark mt-1">Среднее время ответа: 15 мин</small>-->
                         </a>
                     {% else %}
                         <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill border-2">
